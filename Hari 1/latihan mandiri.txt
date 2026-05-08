@@ -1,0 +1,91 @@
+3.	db.inspeksi.drop()
+4.	db.target_kualitas.drop()
+5.	
+6.	var mesinList = []
+7.	for (let i = 1; i <= 10; i++) {
+8.	    mesinList.push("M" + i.toString().padStart(2, "0"))
+9.	}
+10.	
+11.	var batchIds = []
+12.	for (let i = 1; i <= 2000; i++) {
+13.	    batchIds.push("B" + i.toString().padStart(4, "0"))
+14.	}
+15.	
+16.	var inspektorList = ["Andi", "Budi", "Citra", "Dian", "Eka"]
+17.	var jenisCacatList = ["gores", "retak", "bengkok", "warna", "dimensi", "pori"]
+18.	
+19.	var docs = []
+20.	var startDate = new Date(2026, 3, 1, 6, 0)
+21.	
+22.	for (let i = 0; i < 1500; i++) {
+23.	    var batch = batchIds[Math.floor(Math.random() * batchIds.length)]
+24.	    var mesin = mesinList[Math.floor(Math.random() * mesinList.length)]
+25.	
+26.	    var tanggal = new Date(
+27.	        startDate.getTime() + Math.floor(Math.random() * 90 * 24 * 60) * 60000
+28.	    )
+29.	
+30.	    var shift
+31.	    if (tanggal.getHours() < 14) {
+32.	        shift = 1
+33.	    } else if (tanggal.getHours() < 22) {
+34.	        shift = 2
+35.	    } else {
+36.	        shift = 3
+37.	    }
+38.	
+39.	    var jumlah = Math.floor(Math.random() * 401) + 100
+40.	    var reject = Math.floor(jumlah * Math.random() * 0.10)
+41.	
+42.	    var jumlahJenis = Math.floor(Math.random() * 3) + 1
+43.	    var jenisCacat = []
+44.	
+45.	    for (let j = 0; j < jumlahJenis; j++) {
+46.	        jenisCacat.push(
+47.	            jenisCacatList[Math.floor(Math.random() * jenisCacatList.length)]
+48.	        )
+49.	    }
+50.	
+51.	    docs.push({
+52.	        batch_id: batch,
+53.	        mesin: mesin,
+54.	        tanggal: tanggal,
+55.	        shift: shift,
+56.	        inspektor: inspektorList[Math.floor(Math.random() * inspektorList.length)],
+57.	        jumlah_diperiksa: jumlah,
+58.	        cacat_ditemukan: reject,
+59.	        jenis_cacat: jenisCacat
+60.	    })
+61.	
+62.	    if (docs.length === 500) {
+63.	        db.inspeksi.insertMany(docs)
+64.	        docs = []
+65.	    }
+66.	}
+67.	
+68.	if (docs.length) {
+69.	    db.inspeksi.insertMany(docs)
+70.	}
+71.	
+72.	print("Data inspeksi selesai: " + db.inspeksi.countDocuments())
+73.	
+74.	
+75.	var targets = []
+76.	
+77.	for (let i = 1; i <= 2000; i++) {
+78.	    targets.push({
+79.	        batch_id: "B" + i.toString().padStart(4, "0"),
+80.	        target_maks_cacat: Math.floor(Math.random() * 15) + 1
+81.	    })
+82.	
+83.	    if (targets.length === 500) {
+84.	        db.target_kualitas.insertMany(targets)
+85.	        targets = []
+86.	    }
+87.	}
+88.	
+89.	if (targets.length) {
+90.	    db.target_kualitas.insertMany(targets)
+91.	}
+92.	
+93.	print("Data target kualitas selesai: " + db.target_kualitas.countDocuments())
